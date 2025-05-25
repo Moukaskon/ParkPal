@@ -24,7 +24,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginFragment extends Fragment {
-    String url = "http://localhost/Android/";
+    String url = "http://172.29.32.1/Android/";
     public LoginFragment(){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -56,6 +56,8 @@ public class LoginFragment extends Fragment {
                 String message = json.getString("message");
 
                 if (status.equals("success")) {
+                    boolean isAdmin = json.getBoolean("is_admin");
+                    System.out.println(message + " " + isAdmin);
                     if (getActivity() instanceof MainActivity) {
                         ((MainActivity) getActivity()).loadFragment(new HomeFragment());
                     }
