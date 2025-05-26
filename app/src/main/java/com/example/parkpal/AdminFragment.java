@@ -101,7 +101,7 @@ public class AdminFragment extends Fragment {
 
         addButton.setOnClickListener(v -> {
             if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).loadFragment(new AdminChangesFragment());
+                ((MainActivity) getActivity()).loadFragment(new AdminAddSpotFragment());
             }
         });
 

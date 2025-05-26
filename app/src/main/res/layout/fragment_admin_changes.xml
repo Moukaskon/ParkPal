@@ -6,42 +6,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/inTextCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <TextView
+        android:id="@+id/txtSelectedID"
+        android:layout_width="176dp"
+        android:layout_height="60dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:minHeight="50dp"
-        android:text="Name"
-        app:layout_constraintBottom_toTopOf="@+id/inTextCost"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/inTextCostMod"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Error!" />
 
     <EditText
-        android:id="@+id/inTextCost"
+        android:id="@+id/inTextCostMod"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:hint="New Cost"
         android:inputType="textPersonName"
         android:minHeight="50dp"
-        android:text="Name"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/btnSaveChanges"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inTextCode" />
+        app:layout_constraintTop_toBottomOf="@+id/txtSelectedID" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnSaveChanges"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnBackMod"
+        app:layout_constraintTop_toBottomOf="@+id/inTextCostMod" />
+
+    <Button
+        android:id="@+id/btnBackMod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnSaveChanges"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inTextCost" />
+        app:layout_constraintTop_toBottomOf="@+id/inTextCostMod" />
 </androidx.constraintlayout.widget.ConstraintLayout>

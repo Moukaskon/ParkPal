@@ -47,5 +47,49 @@ public class AdminRequest {
             return "[]";
         }
     }
+    public String addParkingSpot(String id, double cost, String baseUrl) {
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("id", id)
+                .add("cost", String.valueOf(cost))
+                .build();
+
+        Request request = new Request.Builder()
+                .url(baseUrl + "addSpot.php")
+                .post(formBody)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "{\"status\":\"error\", \"message\":\"Request failed\"}";
+        }
+    }
+
+    public String updateSpotCost(String id, double cost, String baseUrl) {
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("id", id)
+                .add("cost", String.valueOf(cost))
+                .build();
+
+        String url = baseUrl + "updateCost.php";
+        Request request = new Request.Builder()
+                .url(url)
+                .post(formBody)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "{\"status\":\"error\", \"message\":\"Request failed\"}";
+        }
+    }
+
+
 
 }
