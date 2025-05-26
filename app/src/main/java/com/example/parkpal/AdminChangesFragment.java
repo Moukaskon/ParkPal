@@ -8,6 +8,13 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 
 public class AdminChangesFragment extends Fragment {
+    String code;
+    public AdminChangesFragment(){
+        // To do
+    }
+    public AdminChangesFragment(String areaCode){
+        code = areaCode;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

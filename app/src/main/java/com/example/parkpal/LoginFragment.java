@@ -25,7 +25,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginFragment extends Fragment {
-    String url = "http://172.29.32.1/Android/";
+    String url = Constants.BASE_URL;
     public LoginFragment(){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
