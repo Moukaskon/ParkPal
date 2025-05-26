@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -41,7 +42,31 @@ public class LoginFragment extends Fragment {
 
         btnRegister.setOnClickListener(v1 -> {
             RegisterRequest registerUser = new RegisterRequest();
-            String result = registerUser.register(url, "myUsername", "myPassword");
+            EditText username = view.findViewById(R.id.inTxtUsername);
+            EditText password = view.findViewById(R.id.inTxtPassword);
+            String result = registerUser.register(username.getText().toString(), password.getText().toString(), url);
+
+            try {
+                JSONObject json = new JSONObject(result);
+                String status = json.getString("status");
+                String message = json.getString("message");
+
+                System.out.println("Register Status: " + status);
+                System.out.println("Message: " + message);
+
+                if (status.equals("success")) {
+                    System.out.println(message);
+                    if (getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).loadFragment(new HomeFragment());
+                    }
+                    Toast.makeText(getActivity(), "Success!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "Something went wrong. Try again.", Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         });
 
         btnLogin.setOnClickListener(v -> {

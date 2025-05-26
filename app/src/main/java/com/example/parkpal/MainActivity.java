@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        loadFragment(new LoginFragment());
+        loadFragment(new AdminChangesFragment());
 
         bottomNav.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {

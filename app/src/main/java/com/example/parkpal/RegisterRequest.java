@@ -3,7 +3,7 @@ import okhttp3.*;
 
 public class RegisterRequest {
 
-    public String register(String url, String username, String password) {
+    public String register(String username, String password, String url) {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody formBody = new FormBody.Builder()
