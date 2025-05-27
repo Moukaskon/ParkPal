@@ -10,12 +10,11 @@
         android:id="@+id/remainingCreditTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="160dp"
         android:text="0.00"
-        android:textSize="32sp"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:layout_editor_absoluteY="160dp" />
 
     <Button
         android:id="@+id/rechargeCreditBTN"
@@ -26,4 +25,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/remainingCreditTXT" />
+
+    <TextView
+        android:id="@+id/remCredLABELtxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Balance :"
+        android:textSize="48sp"
+        app:layout_constraintBottom_toTopOf="@+id/remainingCreditTXT"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
