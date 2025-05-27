@@ -4,13 +4,19 @@
         android:id="@+id/nav_home"
         android:title="Home"
         />
-        <!--android:icon="@drawable/ic_home"-->
+    <!--android:icon="@drawable/ic_home"-->
 
     <item
         android:id="@+id/nav_search"
         android:title="Search"
         />
-        <!--android:icon="@drawable/ic_search" />-->
+    <!--android:icon="@drawable/ic_search" />-->
+
+    <item
+        android:id="@+id/nav_history"
+        android:title="History"
+    />
+    <!--android:icon="@drawable/ic_history" --> <!-- Add an icon if you have one -->
 
     <item
         android:id="@+id/nav_profile"

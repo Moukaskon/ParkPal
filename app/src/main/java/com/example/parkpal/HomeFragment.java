@@ -1,15 +1,20 @@
 package com.example.parkpal;
 
+import android.content.Context; // For SharedPreferences
+import android.content.SharedPreferences; // For SharedPreferences
 import android.os.Bundle;
+import android.util.Log; // For logging
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.Toast; // For messages
 
 import androidx.fragment.app.Fragment;
 
 public class HomeFragment extends Fragment {
+    private static final String TAG = "HomeFragment";
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -19,35 +24,57 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        Button btnParkUser = view.findViewById(R.id.btnPark); // Assuming this is your button
-        // You might want separate buttons for testing guest vs user if R.id.btnPark is only one
-        // Or add another button to your fragment_home.xml, e.g., btnParkGuest
+        Button btnParkUser = view.findViewById(R.id.btnPark);
+        Button btnParkGuest = view.findViewById(R.id.btnParkGuest); // Make sure this ID exists in fragment_home.xml
 
-        btnParkUser.setOnClickListener(v -> {
-            if (getActivity() instanceof MainActivity) {
-                // Test LOGGED-IN USER
-                String username = "tester"; // The user you created with Postman
-                // String username = "john123"; // Or your hardcoded one
-                String spotIdToFree = "SPOT1"; // A spot that exists and you want to "end parking" for.
-                // Make sure this spot exists in your parkingSpots table.
-                // And ideally, for a full test, manually set its availability to 0 in DB.
-                ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(username, spotIdToFree));
+        // Retrieve the logged-in username
+        String loggedInUsername = null;
+        if (getActivity() instanceof MainActivity) {
+            loggedInUsername = ((MainActivity) getActivity()).getCurrentUsername();
+        } else if (getContext() != null) { // Fallback if not directly in MainActivity context (less likely)
+            SharedPreferences prefs = getContext().getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE);
+            if (prefs.getBoolean(MainActivity.PREF_KEY_IS_LOGGED_IN, false)) {
+                loggedInUsername = prefs.getString(MainActivity.PREF_KEY_USERNAME, null);
             }
-        });
+        }
 
-        // Example: Add another button in fragment_home.xml for guest testing
-        // <Button android:id="@+id/btnParkGuest" ... />
-        Button btnParkGuest = view.findViewById(R.id.btnParkGuest); // Assuming you add this
-        if (btnParkGuest != null) {
-            btnParkGuest.setOnClickListener(v -> {
-                if (getActivity() instanceof MainActivity) {
-                    // Test GUEST
-                    ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(true)); // Pass true for isGuest
+        final String finalLoggedInUsername = loggedInUsername; // For use in lambda
+
+        if (btnParkUser != null) {
+            btnParkUser.setOnClickListener(v -> {
+                if (finalLoggedInUsername != null) {
+                    // User is logged in
+                    String spotIdToFree = "SPOT1"; // This should eventually be dynamic (e.g., selected spot)
+                    Log.d(TAG, "User " + finalLoggedInUsername + " ending parking for " + spotIdToFree);
+                    if (getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(finalLoggedInUsername, spotIdToFree));
+                    }
+                } else {
+                    // User is not logged in (or acting as guest if btnParkUser is also for guests)
+                    // This logic might need refinement based on your UI flow for guests initiating parking
+                    Log.d(TAG, "Attempting to park as guest or non-logged-in user.");
+                    Toast.makeText(getActivity(), "Please log in or proceed as guest.", Toast.LENGTH_SHORT).show();
+                    // Optionally, direct to EndParkingFragment in guest mode or login
+                    // Example: ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(true)); for guest
+                    // Or: ((MainActivity) getActivity()).loadFragment(new LoginFragment());
                 }
             });
+        } else {
+            Log.e(TAG, "btnPark (R.id.btnPark) not found in layout.");
         }
 
 
+        if (btnParkGuest != null) {
+            btnParkGuest.setOnClickListener(v -> {
+                Log.d(TAG, "Proceeding as guest to end parking.");
+                if (getActivity() instanceof MainActivity) {
+                    // Ensure guest mode is handled correctly in EndParkingFragment
+                    ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(true)); // true for isGuest
+                }
+            });
+        } else {
+            Log.w(TAG, "btnParkGuest (R.id.btnParkGuest) not found in layout. This is optional.");
+        }
         return view;
     }
 }
