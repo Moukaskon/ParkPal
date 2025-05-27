@@ -57,6 +57,15 @@ public class LoginFragment extends Fragment {
 
                 if (status.equals("success")) {
                     boolean isAdmin = json.getBoolean("is_admin");
+
+                    // ✅ Save user_id to SharedPreferences
+                    int userId = json.getInt("user_id");  // requires backend to return "user_id"
+                    requireActivity()
+                            .getSharedPreferences("MyPrefs", getContext().MODE_PRIVATE)
+                            .edit()
+                            .putInt("user_id", userId)
+                            .apply();
+
                     System.out.println(message + " " + isAdmin);
                     if (getActivity() instanceof MainActivity) {
                         ((MainActivity) getActivity()).loadFragment(new HomeFragment());
@@ -68,6 +77,7 @@ public class LoginFragment extends Fragment {
                 e.printStackTrace();
             }
         });
+
 
         btnGuest.setOnClickListener(v2 -> {
             if (getActivity() instanceof MainActivity) {
