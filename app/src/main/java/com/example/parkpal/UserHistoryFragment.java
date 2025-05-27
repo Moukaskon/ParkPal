@@ -44,14 +44,16 @@ public class UserHistoryFragment extends Fragment {
         adapter = new HistoryAdapter(historyList);
         recyclerView.setAdapter(adapter);
 
-        // Retrieve the logged-in user's ID (from SharedPreferences)
-        SharedPreferences prefs = getActivity()
-                .getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        int userId = prefs.getInt("user_id", -1); // default -1 if not set
-        if (userId != -1) {
-            fetchUserHistory(userId);
-        } else {
-            // Handle error: user ID not available
+        if (getActivity() != null) {
+            // Retrieve the logged-in user's ID (from SharedPreferences)
+            SharedPreferences prefs = getActivity()
+                    .getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            int userId = prefs.getInt("user_id", -1); // default -1 if not set
+            if (userId != -1) {
+                fetchUserHistory(userId);
+            } else {
+                System.out.println("Cannot find user id");
+            }
         }
 
         return rootView;
