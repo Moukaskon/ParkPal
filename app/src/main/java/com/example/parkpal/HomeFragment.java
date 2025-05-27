@@ -19,16 +19,35 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        Button btnPark = view.findViewById(R.id.btnPark);
-        btnPark.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Park clicked!", Toast.LENGTH_SHORT).show();
+        Button btnParkUser = view.findViewById(R.id.btnPark); // Assuming this is your button
+        // You might want separate buttons for testing guest vs user if R.id.btnPark is only one
+        // Or add another button to your fragment_home.xml, e.g., btnParkGuest
+
+        btnParkUser.setOnClickListener(v -> {
             if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).loadFragment(new NewParkFragment());
+                // Test LOGGED-IN USER
+                String username = "tester"; // The user you created with Postman
+                // String username = "john123"; // Or your hardcoded one
+                String spotIdToFree = "SPOT1"; // A spot that exists and you want to "end parking" for.
+                // Make sure this spot exists in your parkingSpots table.
+                // And ideally, for a full test, manually set its availability to 0 in DB.
+                ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(username, spotIdToFree));
             }
         });
 
+        // Example: Add another button in fragment_home.xml for guest testing
+        // <Button android:id="@+id/btnParkGuest" ... />
+        Button btnParkGuest = view.findViewById(R.id.btnParkGuest); // Assuming you add this
+        if (btnParkGuest != null) {
+            btnParkGuest.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    // Test GUEST
+                    ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(true)); // Pass true for isGuest
+                }
+            });
+        }
+
+
         return view;
     }
-
-
 }
