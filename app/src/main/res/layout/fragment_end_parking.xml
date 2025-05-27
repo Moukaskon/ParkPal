@@ -1,41 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="24dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".EndParkingFragment">
 
-    <!-- Title -->
     <TextView
-        android:id="@+id/txtEndTitle"
-        android:text="End Parking"
-        android:textSize="24sp"
+        android:id="@+id/tvPaymentTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        tools:text="Confirm and Pay"/>
 
-    <!-- Card form for guests -->
-    <EditText
-        android:id="@+id/inCardNumber"
-        android:hint="Card Number (16 digits)"
-        android:inputType="number"
+    <TextView
+        android:id="@+id/tvPaymentDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp"
+        tools:text="Spot: SPOT1\nPlate: ABC-123\nDuration: 60 min\nCost: $2.50"/>
 
-    <EditText
-        android:id="@+id/inCardCVV"
-        android:hint="CVV (3 digits)"
-        android:inputType="number"
+    <!-- Card details for guest -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutCardNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:layout_marginBottom="8dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:visibility="gone"
+        tools:visibility="visible">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inCardNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Card Number (16 digits)"
+            android:inputType="number"
+            android:maxLength="16"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- End parking button -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutCardCVV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:visibility="gone"
+        tools:visibility="visible">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inCardCVV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="CVV (3 digits)"
+            android:inputType="numberPassword"
+            android:maxLength="3"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+
     <Button
         android:id="@+id/btnEndParking"
-        android:text="End Parking and Pay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"/>
+        tools:text="Confirm and Pay"/>
+
 </LinearLayout>

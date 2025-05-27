@@ -1,19 +1,25 @@
 package com.example.parkpal;
 
-import android.content.Context; // For SharedPreferences
-import android.content.SharedPreferences; // For SharedPreferences
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log; // For logging
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast; // For messages
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
+
+    private TextView txtWelcomeMessage;
+    private Button btnLogout; // Declare the logout button
 
     public HomeFragment() {
         // Required empty public constructor
@@ -24,57 +30,80 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        Button btnParkUser = view.findViewById(R.id.btnPark);
-        Button btnParkGuest = view.findViewById(R.id.btnParkGuest); // Make sure this ID exists in fragment_home.xml
+        txtWelcomeMessage = view.findViewById(R.id.txtWelcome);
+        btnLogout = view.findViewById(R.id.btnLogout); // Initialize the logout button
 
-        // Retrieve the logged-in username
+        // Retrieve the logged-in username to personalize the welcome message
         String loggedInUsername = null;
+        boolean userIsLoggedIn = false; // Flag to check login status
+
         if (getActivity() instanceof MainActivity) {
             loggedInUsername = ((MainActivity) getActivity()).getCurrentUsername();
-        } else if (getContext() != null) { // Fallback if not directly in MainActivity context (less likely)
+            // We can also get a more direct login status if MainActivity provides it
+            // For now, relying on username being non-null implies logged in.
+            if (loggedInUsername != null) {
+                userIsLoggedIn = true;
+            }
+        } else if (getContext() != null) { // Fallback
             SharedPreferences prefs = getContext().getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE);
             if (prefs.getBoolean(MainActivity.PREF_KEY_IS_LOGGED_IN, false)) {
                 loggedInUsername = prefs.getString(MainActivity.PREF_KEY_USERNAME, null);
+                userIsLoggedIn = true;
             }
         }
 
-        final String finalLoggedInUsername = loggedInUsername; // For use in lambda
-
-        if (btnParkUser != null) {
-            btnParkUser.setOnClickListener(v -> {
-                if (finalLoggedInUsername != null) {
-                    // User is logged in
-                    String spotIdToFree = "SPOT1"; // This should eventually be dynamic (e.g., selected spot)
-                    Log.d(TAG, "User " + finalLoggedInUsername + " ending parking for " + spotIdToFree);
-                    if (getActivity() instanceof MainActivity) {
-                        ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(finalLoggedInUsername, spotIdToFree));
-                    }
-                } else {
-                    // User is not logged in (or acting as guest if btnParkUser is also for guests)
-                    // This logic might need refinement based on your UI flow for guests initiating parking
-                    Log.d(TAG, "Attempting to park as guest or non-logged-in user.");
-                    Toast.makeText(getActivity(), "Please log in or proceed as guest.", Toast.LENGTH_SHORT).show();
-                    // Optionally, direct to EndParkingFragment in guest mode or login
-                    // Example: ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(true)); for guest
-                    // Or: ((MainActivity) getActivity()).loadFragment(new LoginFragment());
-                }
-            });
-        } else {
-            Log.e(TAG, "btnPark (R.id.btnPark) not found in layout.");
+        // Set welcome message
+        if (txtWelcomeMessage != null) {
+            if (userIsLoggedIn && loggedInUsername != null) {
+                txtWelcomeMessage.setText("Welcome back, " + loggedInUsername + "!");
+            } else {
+                txtWelcomeMessage.setText("Welcome to ParkPal!");
+            }
         }
 
-
-        if (btnParkGuest != null) {
-            btnParkGuest.setOnClickListener(v -> {
-                Log.d(TAG, "Proceeding as guest to end parking.");
-                if (getActivity() instanceof MainActivity) {
-                    // Ensure guest mode is handled correctly in EndParkingFragment
-                    ((MainActivity) getActivity()).loadFragment(new EndParkingFragment(true)); // true for isGuest
-                }
-            });
-        } else {
-            Log.w(TAG, "btnParkGuest (R.id.btnParkGuest) not found in layout. This is optional.");
+        // Configure Logout Button
+        if (btnLogout != null) {
+            if (userIsLoggedIn) {
+                btnLogout.setVisibility(View.VISIBLE); // Show logout button only if logged in
+                btnLogout.setOnClickListener(v -> {
+                    performLogout();
+                });
+            } else {
+                btnLogout.setVisibility(View.GONE); // Hide if not logged in
+            }
         }
+
         return view;
+    }
+
+    private void performLogout() {
+        if (getContext() == null) {
+            Log.e(TAG, "Context is null, cannot perform logout.");
+            return;
+        }
+
+        // Clear SharedPreferences
+        SharedPreferences prefs = getContext().getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove(MainActivity.PREF_KEY_IS_LOGGED_IN);
+        editor.remove(MainActivity.PREF_KEY_USER_ID);
+        editor.remove(MainActivity.PREF_KEY_USERNAME);
+        editor.remove(MainActivity.PREF_KEY_IS_ADMIN);
+        // editor.clear(); // Alternative: Clears ALL SharedPreferences for this file
+        editor.apply(); // Use apply() for asynchronous save
+
+        Log.d(TAG, "User logged out. SharedPreferences cleared.");
+        Toast.makeText(getContext(), "You have been logged out.", Toast.LENGTH_SHORT).show();
+
+        // Navigate back to LoginFragment
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).loadFragment(new LoginFragment());
+        }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Any further UI updates after view creation can go here.
     }
 }
