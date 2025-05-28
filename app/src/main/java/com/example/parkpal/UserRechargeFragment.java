@@ -31,7 +31,7 @@ public class UserRechargeFragment extends Fragment {
 					float amount = Float.parseFloat(amountStr);
 					RechargeRequest rechargeRequest = new RechargeRequest();
 
-					String response = rechargeRequest.recharge("http://192.168.1.12/ParkPall/", ((MainActivity) getActivity()).getCurrentUsername(), amount);
+					String response = rechargeRequest.recharge("http://10.0.2.2/ParkPall/", ((MainActivity) getActivity()).getCurrentUsername(), amount);
 					System.out.println("Recharge Response: " + response);
 					// You can show a Toast based on success/failure here if needed.
 				} catch (NumberFormatException e) {

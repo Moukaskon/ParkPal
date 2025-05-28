@@ -4,5 +4,5 @@
     <item android:state_checked="true" android:color="@color/colorPrimary" /> <!-- e.g., your app's primary color or black -->
 
     <!-- Color for the unselected (default) item text -->
-    <item android:color="@color/grey_inactive" /> <!-- A visible grey -->
+    <item android:color="@color/black" /> <!-- A visible grey -->
 </selector>

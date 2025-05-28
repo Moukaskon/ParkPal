@@ -34,7 +34,7 @@ public class WalletFragment extends Fragment {
 		// so that it does not freeze the UI
 		new Thread(() -> {
 			BalanceRequest balanceRequest = new BalanceRequest();
-			String response = balanceRequest.getBalance("http://192.168.1.12/ParkPall/", ((MainActivity) getActivity()).getCurrentUsername());
+			String response = balanceRequest.getBalance("http://10.0.2.2/ParkPall", ((MainActivity) getActivity()).getCurrentUsername());
 
 
 			try {
