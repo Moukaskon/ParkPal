@@ -29,18 +29,26 @@
         android:layout_marginBottom="16dp"
         tools:text="SPOT123"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Your Email:"
-        android:textSize="16sp"/>
-    <TextView
-        android:id="@+id/tvParkUserEmail"
+    <LinearLayout
+        android:id="@+id/layoutUserEmailSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp"
-        tools:text="user@example.com"/>
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/labelParkUserEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Email:"
+            android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/tvParkUserEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginBottom="16dp"
+            tools:text="user@example.com"/>
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"

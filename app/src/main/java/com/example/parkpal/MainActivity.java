@@ -18,45 +18,43 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    // SharedPreferences constants defined here for central access
     public static final String PREFS_NAME = "MyPrefs";
     public static final String PREF_KEY_IS_LOGGED_IN = "is_logged_in";
     public static final String PREF_KEY_USERNAME = "username";
-    public static final String PREF_KEY_USER_ID = "user_id"; // If needed elsewhere
-    public static final String PREF_KEY_IS_ADMIN = "is_admin"; // If needed elsewhere
+    public static final String PREF_KEY_USER_ID = "user_id";
+    public static final String PREF_KEY_IS_ADMIN = "is_admin";
+    public static final String PREF_KEY_IS_GUEST_MODE = "is_guest_mode"; // Added key
 
 
     public void loadFragment(Fragment fragment) {
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)
-                    // .addToBackStack(null) // Optional: reconsider if backstack is needed for all transitions
                     .commit();
         }
     }
 
-    /**
-     * Retrieves the currently logged-in username from SharedPreferences.
-     * @return The username if logged in, otherwise null.
-     */
     public String getCurrentUsername() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        if (prefs.getBoolean(PREF_KEY_IS_LOGGED_IN, false)) {
+        // Return username if logged in OR if in guest mode (username will be "guest")
+        if (prefs.getBoolean(PREF_KEY_IS_LOGGED_IN, false) || prefs.getBoolean(PREF_KEY_IS_GUEST_MODE, false)) {
             return prefs.getString(PREF_KEY_USERNAME, null);
         }
         return null;
     }
 
-    /**
-     * Retrieves the currently logged-in user ID from SharedPreferences.
-     * @return The user ID if logged in, otherwise -1.
-     */
     public int getCurrentUserId() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        if (prefs.getBoolean(PREF_KEY_IS_LOGGED_IN, false)) {
+        if (prefs.getBoolean(PREF_KEY_IS_LOGGED_IN, false)) { // Only return valid ID if truly logged in
             return prefs.getInt(PREF_KEY_USER_ID, -1);
         }
-        return -1;
+        return -1; // Return -1 for guests or if not logged in
+    }
+
+    // New method to check guest mode
+    public boolean isGuestMode() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean(PREF_KEY_IS_GUEST_MODE, false);
     }
 
 
@@ -67,15 +65,16 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        if (savedInstanceState == null) { // Load initial fragment only once
+        if (savedInstanceState == null) {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             boolean isLoggedIn = prefs.getBoolean(PREF_KEY_IS_LOGGED_IN, false);
+            boolean isGuest = prefs.getBoolean(PREF_KEY_IS_GUEST_MODE, false);
 
-            if (isLoggedIn) {
-                Log.d(TAG, "User already logged in. Loading HomeFragment.");
+            if (isLoggedIn || isGuest) { // If logged in OR in guest mode, go to Home
+                Log.d(TAG, "User session active (logged in or guest). Loading HomeFragment.");
                 loadFragment(new HomeFragment());
             } else {
-                Log.d(TAG, "User not logged in. Loading LoginFragment.");
+                Log.d(TAG, "No active session. Loading LoginFragment.");
                 loadFragment(new LoginFragment());
             }
         }
@@ -85,34 +84,35 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
                 int itemId = item.getItemId();
-                String currentUsername = getCurrentUsername(); // Get username for fragments that need it
+                String currentUsername = getCurrentUsername();
+                boolean isUserReallyLoggedIn = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                        .getBoolean(PREF_KEY_IS_LOGGED_IN, false);
 
-                // Prevent navigation if not logged in for protected fragments
-                if (currentUsername == null && (itemId == R.id.nav_history || itemId == R.id.nav_profile || itemId == R.id.nav_home /*if home is protected*/)) {
+
+                // For sections requiring actual login (not guest)
+                if (!isUserReallyLoggedIn && (itemId == R.id.nav_history || itemId == R.id.nav_profile)) {
                     Toast.makeText(MainActivity.this, "Please log in to access this section.", Toast.LENGTH_SHORT).show();
-                    loadFragment(new LoginFragment()); // Redirect to login
-                    return false; // Indicate item selection was not handled for navigation
+                    loadFragment(new LoginFragment());
+                    return false;
                 }
 
 
                 if (itemId == R.id.nav_home) {
                     selectedFragment = new HomeFragment();
                 } else if (itemId == R.id.nav_search) {
-                    selectedFragment = new SearchFragment(); // Assuming SearchFragment doesn't require login
+                    // Search is available for both logged-in users and guests
+                    selectedFragment = new SearchFragment();
                 } else if (itemId == R.id.nav_history) {
-                    if (currentUsername != null) {
+                    if (isUserReallyLoggedIn && currentUsername != null) { // History only for logged-in users
                         selectedFragment = UserHistoryFragment.newInstance(currentUsername);
                     } else {
-                        // This case should ideally be caught by the check above
                         Toast.makeText(MainActivity.this, "Login required for History.", Toast.LENGTH_SHORT).show();
                         selectedFragment = new LoginFragment();
                     }
                 } else if (itemId == R.id.nav_profile) {
-                    // Assuming ProfileFragment also needs username or is for logged-in users
-                    if (currentUsername != null) {
-                        selectedFragment = new ProfileFragment(); // Adjust if ProfileFragment needs username
+                    if (isUserReallyLoggedIn && currentUsername != null) { // Profile only for logged-in users
+                        selectedFragment = new ProfileFragment();
                     } else {
-                        // This case should ideally be caught by the check above
                         Toast.makeText(MainActivity.this, "Login required for Profile.", Toast.LENGTH_SHORT).show();
                         selectedFragment = new LoginFragment();
                     }

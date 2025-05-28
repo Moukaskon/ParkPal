@@ -1,5 +1,7 @@
 package com.example.parkpal;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,9 +48,25 @@ public class SearchFragment extends Fragment {
 
     private ParkingSpot selectedParkingSpot = null;
 
+    private boolean isCurrentUserGuest = false;
+
     public SearchFragment() {
         // Required empty public constructor
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Determine if this is a guest flow
+        if (getActivity() instanceof MainActivity) {
+            isCurrentUserGuest = ((MainActivity) getActivity()).isGuestMode();
+        } else if (getContext() != null) { // Fallback
+            SharedPreferences prefs = getContext().getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE);
+            isCurrentUserGuest = prefs.getBoolean(MainActivity.PREF_KEY_IS_GUEST_MODE, false);
+        }
+        Log.d(TAG, "SearchFragment created. isCurrentUserGuest: " + isCurrentUserGuest);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +77,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // ... (initialization of views remains the same) ...
 
         spinnerParkingSpots = view.findViewById(R.id.spinnerParkingSpots);
         btnProceedToPark = view.findViewById(R.id.btnProceedToPark);
@@ -68,7 +87,6 @@ public class SearchFragment extends Fragment {
         availableSpotsList = new ArrayList<>();
         spotDisplayList.add("Select an available spot...");
 
-        // Check getContext() for null before creating adapter
         if (getContext() == null) {
             Log.e(TAG, "Context is null in onViewCreated, cannot create adapter.");
             return;
@@ -81,6 +99,7 @@ public class SearchFragment extends Fragment {
         tvSelectedSpotDetails.setText("Please select a spot from the dropdown.");
 
         spinnerParkingSpots.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // ... (onItemSelected and onNothingSelected remain the same) ...
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0 && position <= availableSpotsList.size()) { // Check bounds
@@ -97,7 +116,6 @@ public class SearchFragment extends Fragment {
                     tvSelectedSpotDetails.setText("Please select a spot from the dropdown.");
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 selectedParkingSpot = null;
@@ -106,19 +124,27 @@ public class SearchFragment extends Fragment {
             }
         });
 
+
         btnProceedToPark.setOnClickListener(v -> {
             if (selectedParkingSpot != null) {
                 if (getActivity() instanceof MainActivity) {
-                    String currentUsername = ((MainActivity) getActivity()).getCurrentUsername();
-                    if (currentUsername != null) {
-                        Log.d(TAG, "Proceeding to park. User: " + currentUsername + ", Spot: " + selectedParkingSpot.getId());
-                        // Pass username and spotId to NewParkFragment
+                    if (isCurrentUserGuest) {
+                        Log.d(TAG, "Proceeding to park as GUEST. Spot: " + selectedParkingSpot.getId());
                         ((MainActivity) getActivity()).loadFragment(
-                                NewParkFragment.newInstance(currentUsername, selectedParkingSpot.getId())
+                                NewParkFragment.newInstanceForGuest(selectedParkingSpot.getId()) // New factory method
                         );
                     } else {
-                        Toast.makeText(getContext(), "Please log in to start parking.", Toast.LENGTH_SHORT).show();
-                        ((MainActivity) getActivity()).loadFragment(new LoginFragment());
+                        String currentUsername = ((MainActivity) getActivity()).getCurrentUsername();
+                        if (currentUsername != null) {
+                            Log.d(TAG, "Proceeding to park. User: " + currentUsername + ", Spot: " + selectedParkingSpot.getId());
+                            ((MainActivity) getActivity()).loadFragment(
+                                    NewParkFragment.newInstance(currentUsername, selectedParkingSpot.getId())
+                            );
+                        } else {
+                            // Should not happen if isCurrentUserGuest is false, but as a fallback
+                            Toast.makeText(getContext(), "Login session error. Please log in again.", Toast.LENGTH_SHORT).show();
+                            ((MainActivity) getActivity()).loadFragment(new LoginFragment());
+                        }
                     }
                 }
             } else {
@@ -129,9 +155,8 @@ public class SearchFragment extends Fragment {
         fetchAvailableSpots();
     }
 
+    // ... (fetchAvailableSpots and ParkingSpot POJO remain the same) ...
     private void fetchAvailableSpots() {
-        // ... (fetchAvailableSpots method remains the same as previous answer) ...
-        // Ensure OkHttpClient and Request are correctly set up
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(API_GET_SPOTS_URL)
@@ -184,15 +209,15 @@ public class SearchFragment extends Fragment {
                                 spotDisplayList.add(String.format(Locale.US, "%s - $%.2f", id, cost));
                             }
                         }
-                        spinnerAdapter.notifyDataSetChanged();
-                        spinnerParkingSpots.setSelection(0);
-                        btnProceedToPark.setEnabled(false);
-                        tvSelectedSpotDetails.setText("Please select a spot from the dropdown.");
+                        if (spinnerAdapter != null) spinnerAdapter.notifyDataSetChanged();
+                        if (spinnerParkingSpots != null) spinnerParkingSpots.setSelection(0);
+                        if (btnProceedToPark != null) btnProceedToPark.setEnabled(false);
+                        if (tvSelectedSpotDetails != null) tvSelectedSpotDetails.setText("Please select a spot from the dropdown.");
 
                     } catch (JSONException e) {
                         Log.e(TAG, "JSON parsing error: ", e);
                         if(getContext() != null) Toast.makeText(getContext(), "Error parsing spot data.", Toast.LENGTH_LONG).show();
-                    } catch (Exception e) {
+                    } catch (Exception e) { // Catch any other unexpected errors
                         Log.e(TAG, "Unexpected error during spot processing: ", e);
                         if(getContext() != null) Toast.makeText(getContext(), "An unexpected error occurred.", Toast.LENGTH_LONG).show();
                     }
@@ -201,16 +226,12 @@ public class SearchFragment extends Fragment {
         });
     }
 
-    // ParkingSpot POJO (inner class)
     private static class ParkingSpot {
         private String id;
         private double cost;
         private boolean available;
-
         public ParkingSpot(String id, double cost, boolean available) {
-            this.id = id;
-            this.cost = cost;
-            this.available = available;
+            this.id = id; this.cost = cost; this.available = available;
         }
         public String getId() { return id; }
         public double getCost() { return cost; }
