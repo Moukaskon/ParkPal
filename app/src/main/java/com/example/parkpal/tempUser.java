@@ -3,12 +3,24 @@ package com.example.parkpal;
 public class tempUser {
 	private String username;
 	private String password;
-	private String email;
+	private Boolean isAdmin;
 
-	public tempUser(String name, String pass, String email) {
-		username = name;
-		password = pass;
-		this.email = email;
+	// Static instance to act like a session
+	private static tempUser currentUser;
+
+	public tempUser(String name, String pass) {
+		this.username = name;
+		this.password = pass;
+		this.isAdmin = false;
+	}
+
+	// Call this to "log in" a user and create session
+	public static void createSession(String name, String pass) {
+		currentUser = new tempUser(name, pass);
+	}
+
+	public static tempUser getSession() {
+		return currentUser;
 	}
 
 	public String getUsername() {
@@ -19,7 +31,11 @@ public class tempUser {
 		return password;
 	}
 
-	public String getEmail() {
-		return email;
+	public Boolean getIsAdmin() {
+		return isAdmin;
+	}
+
+	public void setIsAdmin(Boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }

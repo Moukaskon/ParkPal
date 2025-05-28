@@ -9,10 +9,11 @@ public class RegisterRequest {
         RequestBody formBody = new FormBody.Builder()
                 .add("username", username)
                 .add("password", password)
+                .add("email", "me@mail.com")
                 .build();
 
         Request request = new Request.Builder()
-                .url(url)
+                .url(url + "register.php")
                 .post(formBody)
                 .build();
 
