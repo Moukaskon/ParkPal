@@ -1,6 +1,7 @@
 package com.example.parkpal;
 
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +30,40 @@ public class RegisterFragment extends Fragment {
             EditText password = view.findViewById(R.id.inTextPasswordReg);
             EditText passwoedRetype = view.findViewById(R.id.inTextRetypePassReg);
 
-            if(passwoedRetype.getText().toString().equals(password.getText().toString())) {
-                String result = registerUser.register(username.getText().toString(),
-                        password.getText().toString(), email.getText().toString(), url);
+            String usernameText = username.getText().toString().trim();
+            String emailText = email.getText().toString().trim();
+            String passwordText = password.getText().toString().trim();
+            String retypePasswordText = passwoedRetype.getText().toString().trim();
+
+            if (usernameText.isEmpty() ||
+                    emailText.isEmpty() ||
+                    passwordText.isEmpty() ||
+                    retypePasswordText.isEmpty()) {
+                Toast.makeText(getActivity(), "Please fill in all fields.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (passwordText.length() < 8 || !passwordText.matches(".*[A-Z].*") ||
+                    !passwordText.matches(".*[a-z].*") || !passwordText.matches(".*\\d.*")) {
+                Toast.makeText(getActivity(), "Password must be 8+ characters, include upper/lowercase and a number.",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
+                Toast.makeText(getActivity(), "Invalid email address.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!usernameText.matches("^[a-zA-Z0-9_]{3,15}$")) {
+                Toast.makeText(getActivity(), "Username must be 3–15 characters, letters, digits, or underscores.",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(passwordText.equals(retypePasswordText)) {
+                String result = registerUser.register(usernameText,
+                       passwordText, emailText, url);
 
                 try {
                     JSONObject json = new JSONObject(result);
