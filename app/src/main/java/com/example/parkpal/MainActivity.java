@@ -69,14 +69,24 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             boolean isLoggedIn = prefs.getBoolean(PREF_KEY_IS_LOGGED_IN, false);
             boolean isGuest = prefs.getBoolean(PREF_KEY_IS_GUEST_MODE, false);
+            boolean isAdmin = prefs.getBoolean(PREF_KEY_IS_ADMIN, false);
+
 
             if (isLoggedIn || isGuest) { // If logged in OR in guest mode, go to Home
-                Log.d(TAG, "User session active (logged in or guest). Loading HomeFragment.");
-                loadFragment(new HomeFragment());
+
+                if (isAdmin) {
+                    Log.d(TAG, "Admin session active. Loading AdminFragment.");
+                    loadFragment(new AdminFragment());
+                } else {
+                    Log.d(TAG, "User session active (logged in or guest). Loading HomeFragment.");
+                    loadFragment(new HomeFragment());
+                }
             } else {
                 Log.d(TAG, "No active session. Loading LoginFragment.");
                 loadFragment(new LoginFragment());
             }
+
+
         }
 
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -95,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new LoginFragment());
                     return false;
                 }
-
 
                 if (itemId == R.id.nav_home) {
                     selectedFragment = new HomeFragment();
@@ -118,9 +127,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if (selectedFragment != null) {
+                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                boolean isAdmin = prefs.getBoolean(PREF_KEY_IS_ADMIN, false);
+
+                if (selectedFragment != null && !isAdmin) {
                     loadFragment(selectedFragment);
                     return true;
+                }
+
+                if(isAdmin) {
+                    Toast.makeText(MainActivity.this, "Admin has no access to these.", Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
