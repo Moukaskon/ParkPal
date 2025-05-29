@@ -122,6 +122,10 @@ public class LoginFragment extends Fragment {
         btnGuest.setOnClickListener(v2 -> {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).loadFragment(new HomeFragment());
+                SharedPreferences prefs = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean(PREF_KEY_IS_GUEST_MODE, true);
+                editor.apply();
             }
         });
 

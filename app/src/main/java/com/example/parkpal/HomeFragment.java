@@ -89,6 +89,7 @@ public class HomeFragment extends Fragment {
         editor.remove(MainActivity.PREF_KEY_USER_ID);
         editor.remove(MainActivity.PREF_KEY_USERNAME);
         editor.remove(MainActivity.PREF_KEY_IS_ADMIN);
+        editor.remove(MainActivity.PREF_KEY_IS_GUEST_MODE);
         // editor.clear(); // Alternative: Clears ALL SharedPreferences for this file
         editor.apply(); // Use apply() for asynchronous save
 

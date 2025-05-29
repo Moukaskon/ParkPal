@@ -52,12 +52,13 @@ public class EndParkingFragment extends Fragment {
     private int durationMinutes;
     private double spotCost;
     private boolean isGuest = false;
-
+    private EditText inCardHolderName;
     private EditText inCard;
+    private EditText inEXP;
     private EditText inCVV;
     private Button btnAction;
     private TextView tvPaymentTitle, tvPaymentDetails;
-    private TextInputLayout layoutCardNumber, layoutCardCVV; // Declare TextInputLayouts
+    private TextInputLayout cardHolderLayout, layoutCardNumber, EXPlayout, layoutCardCVV; // Declare TextInputLayouts
 
 
     public EndParkingFragment() { /* ... */ }
@@ -139,23 +140,40 @@ public class EndParkingFragment extends Fragment {
 
         tvPaymentTitle = view.findViewById(R.id.tvPaymentTitle);
         tvPaymentDetails = view.findViewById(R.id.tvPaymentDetails);
+        inCardHolderName = view.findViewById(R.id.inCardHolderName);
         inCard = view.findViewById(R.id.inCardNumber);
+        inEXP = view.findViewById(R.id.inExpDate);
         inCVV = view.findViewById(R.id.inCardCVV);
         btnAction = view.findViewById(R.id.btnEndParking);
 
         // Initialize TextInputLayout views
+        cardHolderLayout = view.findViewById(R.id.cardHolderlayout);
         layoutCardNumber = view.findViewById(R.id.layoutCardNumber);
+        EXPlayout = view.findViewById(R.id.layoutExpDate);
         layoutCardCVV = view.findViewById(R.id.layoutCardCVV);
 
         Log.d(TAG, "onCreateView: isGuest flag before UI update is: " + isGuest); // Log before check
 
         if (isGuest) {
             Log.d(TAG, "Guest mode UI: Setting card fields VISIBLE.");
+            if (cardHolderLayout != null) {
+                cardHolderLayout.setVisibility(View.VISIBLE);
+            } else {
+                Log.e(TAG, "cardHolderLayout is NULL in onCreateView!");
+            }
+
             if (layoutCardNumber != null) {
                 layoutCardNumber.setVisibility(View.VISIBLE);
             } else {
                 Log.e(TAG, "layoutCardNumber is NULL in onCreateView!");
             }
+
+            if (EXPlayout != null) {
+                EXPlayout.setVisibility(View.VISIBLE);
+            } else {
+                Log.e(TAG, "EXPlayout is NULL in onCreateView!");
+            }
+
             if (layoutCardCVV != null) {
                 layoutCardCVV.setVisibility(View.VISIBLE);
             } else {
@@ -166,7 +184,9 @@ public class EndParkingFragment extends Fragment {
             if (inCVV != null) inCVV.setEnabled(true);
         } else {
             Log.d(TAG, "Registered user UI: Setting card fields GONE.");
+            if (cardHolderLayout != null) cardHolderLayout.setVisibility(View.GONE);
             if (layoutCardNumber != null) layoutCardNumber.setVisibility(View.GONE);
+            if (EXPlayout != null) EXPlayout.setVisibility(View.GONE);
             if (layoutCardCVV != null) layoutCardCVV.setVisibility(View.GONE);
         }
 
@@ -216,18 +236,27 @@ public class EndParkingFragment extends Fragment {
     private void handleFinalizeNewSession() {
         if (isGuest) {
             // Guest starting a new session
+            String name = "";
             String card = "";
+            String exp = "";
             String cvv = "";
+
+            if (inCardHolderName != null) name = inCardHolderName.getText().toString().trim();
             if (inCard != null) card = inCard.getText().toString().trim();
+            if (inEXP != null) exp = inEXP.getText().toString().trim();
             if (inCVV != null) cvv = inCVV.getText().toString().trim();
 
+            if (!name.equals(name.toUpperCase())) {
+                Toast.makeText(getActivity(), "Name must be in capitals", Toast.LENGTH_SHORT).show(); return;
+            }
             if (card.length() != 16 || !TextUtils.isDigitsOnly(card)) {
-                Toast.makeText(getActivity(), "Card must be 16 digits", Toast.LENGTH_SHORT).show();
-                return;
+                Toast.makeText(getActivity(), "Card must be 16 digits", Toast.LENGTH_SHORT).show(); return;
             }
             if (cvv.length() != 3 || !TextUtils.isDigitsOnly(cvv)) {
-                Toast.makeText(getActivity(), "CVV must be 3 digits", Toast.LENGTH_SHORT).show();
-                return;
+                Toast.makeText(getActivity(), "CVV must be 3 digits", Toast.LENGTH_SHORT).show(); return;
+            }
+            if (exp.matches("/^(0[1-9]|1[0-2])(\\/|-)([0-9]{2})$/gm")) {
+                Toast.makeText(getActivity(), "EXP must be MM/YY", Toast.LENGTH_SHORT).show(); return;
             }
             Toast.makeText(getActivity(), "Guest payment processing...", Toast.LENGTH_SHORT).show();
             callFinalizeParkingAPI(true, card, cvv);
@@ -250,16 +279,27 @@ public class EndParkingFragment extends Fragment {
     }
 
     private void processGuestOnlyPayment() { /* ... */
+        String name = "";
         String card = "";
+        String exp = "";
         String cvv = "";
+
+        if (inCardHolderName != null) name = inCardHolderName.getText().toString().trim();
         if (inCard != null) card = inCard.getText().toString().trim();
+        if (inEXP != null) exp = inEXP.getText().toString().trim();
         if (inCVV != null) cvv = inCVV.getText().toString().trim();
 
+        if (!name.equals(name.toUpperCase())) {
+            Toast.makeText(getActivity(), "Name must be in capitals", Toast.LENGTH_SHORT).show(); return;
+        }
         if (card.length() != 16 || !TextUtils.isDigitsOnly(card)) {
             Toast.makeText(getActivity(), "Card must be 16 digits", Toast.LENGTH_SHORT).show(); return;
         }
         if (cvv.length() != 3 || !TextUtils.isDigitsOnly(cvv)) {
             Toast.makeText(getActivity(), "CVV must be 3 digits", Toast.LENGTH_SHORT).show(); return;
+        }
+        if (!exp.matches("/^(0[1-9]|1[0-2])(\\/|-)([0-9]{2})$/gm")) {
+            Toast.makeText(getActivity(), "EXP must be MM/YY", Toast.LENGTH_SHORT).show(); return;
         }
         Toast.makeText(getActivity(), "Payment successful (guest direct pay)", Toast.LENGTH_SHORT).show();
         if (getActivity() instanceof MainActivity) {
