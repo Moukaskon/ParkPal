@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WalletFragment">
+
+    <TextView
+        android:id="@+id/remainingCreditTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0.00"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/rechargeCreditBTN"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/remCredLABELtxt" />
+
+    <Button
+        android:id="@+id/rechargeCreditBTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RECHARGE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/remainingCreditTXT" />
+
+    <TextView
+        android:id="@+id/remCredLABELtxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Balance :"
+        android:textSize="48sp"
+        app:layout_constraintBottom_toTopOf="@+id/remainingCreditTXT"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

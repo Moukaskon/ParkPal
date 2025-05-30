@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserRechargeFragment">
+
+    <TextView
+        android:id="@+id/paymentInfoLblTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment Info"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/inCardHolderName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/inCardNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="XXXX-XXXX-XXXX-XXXX"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/inCardEXPDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inCardHolderName" />
+
+    <EditText
+        android:id="@+id/inCVV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="CVV"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/inCreditAmount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inCardEXPDate" />
+
+    <EditText
+        android:id="@+id/inCreditAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Amount"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/addCreditButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inCVV" />
+
+    <Button
+        android:id="@+id/addCreditButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inCreditAmount" />
+
+    <EditText
+        android:id="@+id/inCardHolderName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Card Holder"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/inCardNumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInfoLblTXT" />
+
+    <EditText
+        android:id="@+id/inCardEXPDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Expires (MM/YY)"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/inCVV"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inCardNumber" />
+</androidx.constraintlayout.widget.ConstraintLayout>

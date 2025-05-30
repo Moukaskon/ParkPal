@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey_active">#FF212121</color> <!-- Darker Grey/Black for selected -->
+    <color name="grey_inactive">#FF757575</color> <!-- Medium Grey for unselected -->
+    <color name="colorPrimary">@color/purple_500</color> <!-- Example primary color -->
 </resources>

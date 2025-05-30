@@ -3,14 +3,15 @@ import okhttp3.*;
 
 public class RegisterRequest {
 
-    public String register(String url, String username, String password) {
+    public String register(String username, String password, String email, String baseUrl) {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody formBody = new FormBody.Builder()
                 .add("username", username)
                 .add("password", password)
+                .add("email", email)
                 .build();
-
+        String url = baseUrl + "register.php";
         Request request = new Request.Builder()
                 .url(url)
                 .post(formBody)
