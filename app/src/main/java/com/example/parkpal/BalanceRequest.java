@@ -1,33 +1,27 @@
 package com.example.parkpal;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Scanner;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class BalanceRequest {
+	private final OkHttpClient client = new OkHttpClient();
+
 	public String getBalance(String urlString, String username) {
 		try {
-			URL url = new URL(urlString + "/get_balance.php");
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			String fullUrl = urlString + "/get_balance.php?username=" + username;
 
-			conn.setRequestMethod("POST");
-			conn.setDoOutput(true);
+			Request request = new Request.Builder()
+					.url(fullUrl)
+					.get()
+					.build();
 
-			String postData = "username=" + username;
-			OutputStream os = conn.getOutputStream();
-			os.write(postData.getBytes());
-			os.flush();
-			os.close();
-
-			Scanner in = new Scanner(conn.getInputStream());
-			StringBuilder response = new StringBuilder();
-			while (in.hasNextLine()) {
-				response.append(in.nextLine());
+			try (Response response = client.newCall(request).execute()) {
+				if (!response.isSuccessful()) {
+					return "{\"status\":\"error\",\"message\":\"HTTP error code: " + response.code() + "\"}";
+				}
+				return response.body().string();
 			}
-			in.close();
-
-			return response.toString();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "{\"status\":\"error\",\"message\":\"Exception occurred\"}";

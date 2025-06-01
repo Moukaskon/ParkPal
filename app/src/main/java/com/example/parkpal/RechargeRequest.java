@@ -1,31 +1,33 @@
 package com.example.parkpal;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.FormBody;
 
 public class RechargeRequest {
+	private final OkHttpClient client = new OkHttpClient();
+
 	public String recharge(String urlString, String username, float amount) {
 		try {
-			URL url = new URL(urlString + "recharge.php");
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			RequestBody formBody = new FormBody.Builder()
+					.add("username", username)
+					.add("amount", String.valueOf(amount))
+					.build();
 
-			conn.setRequestMethod("POST");
-			conn.setDoOutput(true);
-			String postData = "username=" + URLEncoder.encode(username, "UTF-8")
-					+ "&amount=" + amount;
+			Request request = new Request.Builder()
+					.url(urlString + "recharge.php")
+					.post(formBody)
+					.build();
 
-			OutputStream os = conn.getOutputStream();
-			os.write(postData.getBytes());
-			os.flush();
-			os.close();
-
-			java.util.Scanner scanner = new java.util.Scanner(conn.getInputStream());
-			String response = scanner.useDelimiter("\\A").next();
-			scanner.close();
-
-			return response;
+			try (Response response = client.newCall(request).execute()) {
+				if (!response.isSuccessful()) {
+					return "{\"status\":\"error\",\"message\":\"HTTP error code: " + response.code() + "\"}";
+				}
+				return response.body().string();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "{\"status\":\"error\",\"message\":\"Exception: " + e.getMessage() + "\"}";
